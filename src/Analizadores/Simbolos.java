@@ -9,8 +9,8 @@ package Analizadores;
 public class Simbolos {
   /* terminals */
   public static final int Tk_guion = 12;
-  public static final int Tk_inicio_Ejercicios = 15;
-  public static final int Tk_inicio_Conjuntos = 14;
+  public static final int Tk_digito = 18;
+  public static final int Tk_inicio_Ejercicios = 13;
   public static final int Tk_cer_positiva = 2;
   public static final int Tk_CONJ = 8;
   public static final int EOF = 0;
@@ -19,11 +19,13 @@ public class Simbolos {
   public static final int Tk_kleene = 3;
   public static final int Tk_or = 4;
   public static final int error = 1;
+  public static final int Tk_caracter = 17;
   public static final int Tk_valor_comillas = 11;
-  public static final int Tk_dosp = 17;
-  public static final int Tk_id = 16;
+  public static final int Tk_dosp = 15;
+  public static final int Tk_inter = 19;
+  public static final int Tk_id = 14;
   public static final int Tk_pcoma = 10;
-  public static final int TK_inicio_ER = 13;
+  public static final int Tk_coma = 16;
   public static final int Tk_flecha = 9;
   public static final int Tk_concat = 5;
   public static final String[] terminalNames = new String[] {
@@ -40,11 +42,13 @@ public class Simbolos {
   "Tk_pcoma",
   "Tk_valor_comillas",
   "Tk_guion",
-  "TK_inicio_ER",
-  "Tk_inicio_Conjuntos",
   "Tk_inicio_Ejercicios",
   "Tk_id",
-  "Tk_dosp"
+  "Tk_dosp",
+  "Tk_coma",
+  "Tk_caracter",
+  "Tk_digito",
+  "Tk_inter"
   };
 }
 
