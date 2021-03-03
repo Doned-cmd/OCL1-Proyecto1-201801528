@@ -1,0 +1,62 @@
+
+/*--------------- 1ra Area: Codigo de Usuario -----------------------*/
+//-------> importaciones, paquetes
+package Analizadores;
+import java_cup.runtime.Symbol;
+import Estructuras.Nodo;
+
+//------> Codigo para el parser,variables, metodos
+parser code{:
+        public String resultado = "";
+        public static Nodo Raiz; 
+        public static int contadorhojas = 0;
+        
+        public Nodo getRaiz(){
+            return Raiz;
+        }
+
+:}
+
+//------> Codigo para las acciones gramaticales
+action code
+{:  :}
+
+
+
+
+/*--------------- 2da Area: Declaraciones -----------------------*/
+
+//------> declaracion de terminales 
+
+terminal Tk_cer_positiva, Tk_kleene, Tk_or, Tk_concat, Tk_llavea, Tk_llavec, Tk_CONJ, Tk_flecha, Tk_pcoma, Tk_valor_comillas , Tk_guion, Tk_inicio_ER, Tk_inicio_Conjuntos, Tk_inicio_Ejercicios, Tk_id, Tk_dosp ;
+
+//------> declaracion de no terminales
+non terminal String INICIO,
+            E;
+
+//------> precedencia de menor a mayor
+/*
+precedence left kleene, cpositiva;
+precedence left or;
+precedence left conc;
+*/
+
+
+start with INICIO;
+
+/*--------------- 3ra Area: Reglas Semanticas -----------------------*/
+
+
+
+INICIO::= E:a    {: resultado=a; System.out.print(a); :} 
+       ;
+
+
+
+ 
+
+
+
+
+
+
