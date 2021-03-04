@@ -18,12 +18,31 @@ import Estructuras.*;
  * @author bryan
  */
 public class VentanaInterfaz extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form VentanaInterfaz
      */
     
     private static LinkedList<Arbol> listadearboles = new LinkedList<>();
+    private static LinkedList<error> listaerrores = new LinkedList<>();
+
+    public static LinkedList<Arbol> getListadearboles() {
+        return listadearboles;
+    }
+
+    public static void setListadearboles(LinkedList<Arbol> listadearboles) {
+        VentanaInterfaz.listadearboles = listadearboles;
+    }
+
+    public static LinkedList<error> getListaerrores() {
+        return listaerrores;
+    }
+
+    public static void setListaerrores(LinkedList<error> listaerrores) {
+        VentanaInterfaz.listaerrores = listaerrores;
+    }
+    
+    
     
     public VentanaInterfaz() {
         initComponents();        
@@ -155,13 +174,12 @@ public class VentanaInterfaz extends javax.swing.JFrame {
         
         /*
             ---> Lo siguiente solo fue utilizado para fines de ejemplo 
-            Analizador_Lexico lexico = new Analizador_Lexico(new BufferedReader( new StringReader(TextoEntrada.getText())));
+            Analizador_Lexico lexico = new Analizador_Lexico(new BufferedReader( new StringReader(MostrarArchivo.getText())));
             
             while(lexico.next_token().value != null){
                 System.out.println(lexico.next_token());
             }*/
-        
-          
+
             //raiz = sintactico.getRaiz();
 
 

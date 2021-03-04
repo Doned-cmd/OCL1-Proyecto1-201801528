@@ -39,24 +39,27 @@ LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]        
 valor = ([0-9]|[a-zA-ZñÑ])*
 
+reconocerASCII = [^(\n)][^(\r)][!-/]|[:-@]|[\[-\`]|[{-}]
+
+reconocermenoscom = [^(\n)][^(\r)][^\"][!-\/]|[:-@]|[\[-\`]|[{-}]
 
 Tk_CONJ = CONJ
 
 Tk_Flecha = ->
 
-comentariosimple    = "//" {cualquiercaracter}* 
+comentariosimple    = "//" .* 
 
-comentarioencerrado = "<!" ({valor}|\n|\s|","|".")* "!>"
+comentarioencerrado = "<!" ({valor}|{digito}|{reconocerASCII}|\n|\s|","|".")* "!>"
 
-CadenaEnComillas = \" (.*?) \"
+CadenaEnComillas = \" [^\"].* \"
 
-Tk_Inicio_Conjuntos = "////// CONJUNTOS"
+Tk_caracter = {Caracter}|{digito}|reconocermenoscom
 
-TK_Inicio_ER = "/////// EXPRESIONES REGULARES"
+
 
 Tk_Inicio_Ejercicios = %%
 
-Tk_caracter_esp = \\\'|\\(n)|\\\"
+Tk_caracter_esp = \\\'|\\"n"|\\\"
 
 Tk_id = {Caracter}({Caracter}|"_"|{digito})*
 
@@ -97,7 +100,7 @@ Tk_id = {Caracter}({Caracter}|"_"|{digito})*
 
 {digito}    {{System.out.println("Reconocio "+yytext()+" Tk_digito"); return new Symbol(Simbolos.Tk_digito, yycolumn, yyline, yytext());}}
 {Tk_caracter_esp} {{System.out.println("Reconocio "+yytext()+" Tk_caracter"); return new Symbol(Simbolos.Tk_caracter, yycolumn, yyline, yytext());}}
-{Caracter}  {{System.out.println("Reconocio "+yytext()+" Tk_caracter"); return new Symbol(Simbolos.Tk_caracter, yycolumn, yyline, yytext());}}
+{Tk_caracter}  {{System.out.println("Reconocio "+yytext()+" Tk_caracter"); return new Symbol(Simbolos.Tk_caracter, yycolumn, yyline, yytext());}}
 {Tk_id}  {{System.out.println("Reconocio "+yytext()+" Tk_id"); return new Symbol(Simbolos.Tk_id, yycolumn, yyline, yytext());}}
 
 
@@ -114,5 +117,5 @@ Tk_id = {Caracter}({Caracter}|"_"|{digito})*
 [ \t\r\n\f]             {/* Espacios en blanco, se ignoran */}
 
 //--> Errores Lexicos
-.                       { System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);}
+.                       { System.out.println("Error Lexico: "+yytext()+" Linea "+yyline+" Columna "+yycolumn);}
 

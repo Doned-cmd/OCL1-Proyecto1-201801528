@@ -3,14 +3,38 @@
 //-------> importaciones, paquetes
 package Analizadores;
 import java_cup.runtime.Symbol;
+
 import Estructuras.Nodo;
+import Estructuras.RegularExpresion;
+import Estructuras.error;
+import Estructuras.Conjunto;
+
+import proyecto1.VentanaInterfaz;
+import proyecto1.Proyecto1;
+
+import java.util.LinkedList;
 
 //------> Codigo para el parser,variables, metodos
 parser code{:
         public String resultado = "";
         public static Nodo Raiz; 
+        private static String NombreCONJ = "";
         public static int contadorhojas = 0;
+   /*     
+        public void syntax_error(Symbol s)
+        {
+            System.err.println("Error en la Linea " + (s.right+1) +" Columna "+(s.left+1)+ ". Identificador "+s.value + " no reconocido. Se ha recuperado del error." );
+            error nuevo = new error("Error Sintactico (Recuperado)", s.value.toString(), s.right+1, s.left+1);
+            Proyecto1.iniciar.getListaerrores().add(nuevo);
+        }
         
+        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+        {
+            System.err.println("Error en la Linea " + (s.right+1)+ " Columna "+(s.left+1)+". Identificador " +s.value + " no reconocido.");
+            error nuevo = new error("Error Sintactico", s.value.toString(), s.right+1, s.left+1);
+            Proyecto1.iniciar.getListaerrores().add(nuevo);
+        }
+*/
         public Nodo getRaiz(){
             return Raiz;
         }
@@ -28,11 +52,15 @@ action code
 
 //------> declaracion de terminales 
 
-terminal Tk_cer_positiva, Tk_kleene, Tk_or, Tk_concat, Tk_llavea, Tk_llavec, Tk_CONJ, Tk_flecha, Tk_pcoma, Tk_valor_comillas, 
+terminal String Tk_cer_positiva, Tk_kleene, Tk_or, Tk_concat, Tk_llavea, Tk_llavec, Tk_CONJ, Tk_flecha, Tk_pcoma, Tk_valor_comillas, 
 Tk_guion, Tk_inicio_Ejercicios, Tk_id, Tk_dosp, Tk_coma, Tk_caracter, Tk_digito, Tk_inter ;
 
 //------> declaracion de no terminales
-non terminal String INICIO, S, VA, VAC, VAG, EXP, EJ;
+non terminal String INICIO, S, VA, VAC, VAG, EJ;
+non terminal Nodo EXP, IDEXP;
+non terminal Conjunto CONJUNTOS; 
+non terminal RegularExpresion EXPRESIONES;
+non terminal String EJERCICIOS;
 
 //------> precedencia de menor a mayor
 /*
@@ -46,49 +74,61 @@ start with INICIO;
 
 /*--------------- 3ra Area: Reglas Semanticas -----------------------*/
 
-INICIO::= Tk_llavea S Tk_llavec   {:  :} 
+INICIO::= Tk_llavea S Tk_llavec     {:  :} 
        ;
 
-S ::=   Tk_CONJ Tk_dosp Tk_id Tk_flecha VA      {:  :}
-        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA S  {:  :}
-        | Tk_id Tk_flecha EXP Tk_pcoma S        {:  :}
-	| Tk_id Tk_flecha EXP Tk_pcoma         {:  :}
-	| Tk_inicio_Ejercicios Tk_inicio_Ejercicios EJ {:  :}
+S ::=   CONJUNTOS                           {::}
+        | EXPRESIONES                       {::}
+	| EJERCICIOS                        {::}
 ;
+CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id Tk_flecha VA             {:  :}
+            | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA S 
+;
+EXPRESIONES ::= Tk_id:a Tk_flecha EXP Tk_pcoma S             {:  :}
+            | Tk_id Tk_flecha EXP Tk_pcoma                 {:  :}
+;
+EJERCICIOS ::= Tk_inicio_Ejercicios Tk_inicio_Ejercicios EJ {:  :}
+;
+
 
 /*     PARA CONJUNTOS:  */
-VA ::=  Tk_digito VAC                       {:  :}
-        | Tk_digito Tk_pcoma                {:  :}
- 	| Tk_caracter VAC                   {:  :}
-	|Tk_caracter Tk_pcoma               {:  :}
+VA ::=  Tk_digito VAC               {:  :}
+        | Tk_digito Tk_pcoma        {:  :}
+ 	| Tk_caracter VAC           {:  :}
+	|Tk_caracter Tk_pcoma       {:  :}
 ;
 
 
-VAC ::= Tk_coma VA                          {:  :}
-	| Tk_guion VAG                      {:  :}
+VAC ::= Tk_coma VA                  {:  :}
+	| Tk_guion VAG              {:  :}
 ;
 
-VAG ::=  Tk_caracter Tk_pcoma                 {:  :}
-	| Tk_digito Tk_pcoma                {:  :}
-;
-
-/*     PARA EXPRESIONES REGULARES:  */
-
-
-EXP ::=  Tk_concat EXP EXP                    {:  :}
-	| Tk_or EXP EXP                     {:  :}
-	| Tk_kleene EXP                     {:  :}
-	| Tk_cer_positiva EXP               {:  :}
-	| Tk_inter EXP                      {:  :}  
-	| Tk_llavea Tk_id Tk_llavec         {:  :}
-	| Tk_valor_comillas                 {:  :}
+VAG ::=  Tk_caracter Tk_pcoma       {:  :}
+	| Tk_digito Tk_pcoma        {:  :}
 ;
 
 /*     PARA EXPRESIONES REGULARES:  */
 
-EJ ::=  Tk_id Tk_dosp Tk_valor_comillas Tk_pcoma  EJ     {:  :}
+
+EXP ::=  Tk_concat:b EXP:a EXP:c                  {: RESULT=new Nodo("Tk_concat", "", -1, a, c, false); :}
+	| Tk_or:b EXP:a EXP:c                     {: RESULT=new Nodo("Tk_or", "", -1, a, c , false); :}
+	| Tk_kleene:b EXP:a                     {: RESULT=new Nodo("Tk_kleene", "", -1, a, null , false);:}
+	| Tk_cer_positiva:b EXP:a               {: RESULT=new Nodo("Tk_cer_positiva", "", -1, a, null , false); :}
+	| Tk_inter:b EXP:a                      {: RESULT=new Nodo("Tk_inter", "", -1, a, null , false); :}  
+	| Tk_llavea:a IDEXP:b Tk_llavec:c         {: RESULT=b ;:}
+	| Tk_valor_comillas:a                 {: RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null, false); parser.contadorhojas++; :}
+        | Tk_digito:a                         {: RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+        | Tk_caracter:a                       {: RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+
+;
+IDEXP ::= Tk_id:a        {:RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+;
+
+/*     PARA EXPRESIONES REGULARES:  */
+
+EJ ::=  Tk_id Tk_dosp Tk_valor_comillas Tk_pcoma  EJ    {:  :}
         | Tk_id Tk_dosp Tk_valor_comillas Tk_pcoma      {:  :}
-        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA EJ    {:  :}
-        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA        {:  :}
+        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA EJ         {:  :}
+        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA            {:  :}
 ;
 
