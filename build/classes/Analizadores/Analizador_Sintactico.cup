@@ -5,9 +5,11 @@ package Analizadores;
 import java_cup.runtime.Symbol;
 
 import Estructuras.Nodo;
+import Estructuras.Arbol;
 import Estructuras.RegularExpresion;
 import Estructuras.error;
 import Estructuras.Conjunto;
+import Estructuras.Ejercicio;
 
 import proyecto1.VentanaInterfaz;
 import proyecto1.Proyecto1;
@@ -19,7 +21,13 @@ parser code{:
         public String resultado = "";
         public static Nodo Raiz; 
         private static String NombreCONJ = "";
+        public static String NombreArbol = "";
         public static int contadorhojas = 0;
+
+        public static LinkedList<RegularExpresion> ListaArboles = new LinkedList<>();
+        public static LinkedList<Conjunto> ListaConjuntos = new LinkedList<>();
+        public static LinkedList<Ejercicio> ListaEjercicios = new LinkedList<>();
+        public static LinkedList<String>Vconju = new LinkedList<>();
    /*     
         public void syntax_error(Symbol s)
         {
@@ -35,10 +43,18 @@ parser code{:
             Proyecto1.iniciar.getListaerrores().add(nuevo);
         }
 */
-        public Nodo getRaiz(){
-            return Raiz;
+
+        public LinkedList<RegularExpresion> getListaArboles(){
+            return ListaArboles;
         }
 
+        public LinkedList<Conjunto> getListaConjuntos(){
+            return ListaConjuntos;
+        }
+        
+        public LinkedList<Ejercicio> getListaEjercicios(){
+            return ListaEjercicios;
+        }
 :}
 
 //------> Codigo para las acciones gramaticales
@@ -56,11 +72,18 @@ terminal String Tk_cer_positiva, Tk_kleene, Tk_or, Tk_concat, Tk_llavea, Tk_llav
 Tk_guion, Tk_inicio_Ejercicios, Tk_id, Tk_dosp, Tk_coma, Tk_caracter, Tk_digito, Tk_inter ;
 
 //------> declaracion de no terminales
-non terminal String INICIO, S, VA, VAC, VAG, EJ;
+non terminal String INICIO;
+non terminal String S, VAC;
+
+non terminal RegularExpresion EXPRESIONES;//Expresiones regulares
 non terminal Nodo EXP, IDEXP;
-non terminal Conjunto CONJUNTOS; 
-non terminal RegularExpresion EXPRESIONES;
-non terminal String EJERCICIOS;
+
+non terminal Conjunto CONJUNTOS; // conjuntos
+non terminal Conjunto P;
+non terminal LinkedList<String> VA, VAG;
+
+non terminal LinkedList<Ejercicio> EJERCICIOS;// Ejercicios
+non terminal Ejercicio EJ;
 
 //------> precedencia de menor a mayor
 /*
@@ -77,58 +100,81 @@ start with INICIO;
 INICIO::= Tk_llavea S Tk_llavec     {:  :} 
        ;
 
-S ::=   CONJUNTOS                           {::}
-        | EXPRESIONES                       {::}
-	| EJERCICIOS                        {::}
+S ::=   CONJUNTOS:a                           {: parser.ListaConjuntos.add(a);:}
+        | EXPRESIONES:a                       {: parser.ListaArboles.add(a);:}
+	| EJERCICIOS:a                        {: :}
 ;
-CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id Tk_flecha VA             {:  :}
-            | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA S 
+CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b              {: RESULT = new Conjunto(b, a.toString()); :}
+            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b S              {: RESULT = new Conjunto(b, a.toString()); :}
+            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VAG:b S             {: RESULT = new Conjunto(b, a.toString()); :}
+            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VAG:b               {: RESULT = new Conjunto(b, a.toString()); :}
+;       
+
+EXPRESIONES ::= Tk_id:a Tk_flecha EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
+            | Tk_id:a Tk_flecha EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
 ;
-EXPRESIONES ::= Tk_id:a Tk_flecha EXP Tk_pcoma S             {:  :}
-            | Tk_id Tk_flecha EXP Tk_pcoma                 {:  :}
-;
-EJERCICIOS ::= Tk_inicio_Ejercicios Tk_inicio_Ejercicios EJ {:  :}
+
+
+EJERCICIOS ::= Tk_inicio_Ejercicios Tk_inicio_Ejercicios EJ:a {: parser.ListaEjercicios.add(a);:}
 ;
 
 
 /*     PARA CONJUNTOS:  */
-VA ::=  Tk_digito VAC               {:  :}
-        | Tk_digito Tk_pcoma        {:  :}
- 	| Tk_caracter VAC           {:  :}
-	|Tk_caracter Tk_pcoma       {:  :}
+VA ::=  Tk_digito:c VAC               {: parser.Vconju.add(c.toString()); parser.NombreCONJ = c.toString();:}
+        | Tk_digito:c Tk_pcoma        {: RESULT= parser.Vconju; Vconju=new LinkedList<String>(); parser.NombreCONJ = c.toString();:}
+ 	| Tk_caracter:c VAC           {: parser.Vconju.add(c.toString()); parser.NombreCONJ = c.toString();:}
+	| Tk_caracter:c Tk_pcoma      {: RESULT= parser.Vconju; Vconju=new LinkedList<String>(); parser.NombreCONJ = c.toString();:}
 ;
 
 
-VAC ::= Tk_coma VA                  {:  :}
-	| Tk_guion VAG              {:  :}
+VAC ::= Tk_coma VA                  {::}
+	
 ;
 
-VAG ::=  Tk_caracter Tk_pcoma       {:  :}
-	| Tk_digito Tk_pcoma        {:  :}
+VAG ::= Tk_caracter:a Tk_guion Tk_caracter:b Tk_pcoma       {:  int ini = (int)a.toString().charAt(0); 
+                                                            int finale = (int)b.toString().charAt(0); 
+                                                            for(int i=ini; i<=finale; i++){ parser.Vconju.add(Character.toString((char) i)) ;}  
+                                                            parser.Vconju=new LinkedList<String>();  :}
+        |Tk_digito:a Tk_guion Tk_digito:b Tk_pcoma        {:  int ini = (int)a.toString().charAt(0); 
+                                                            int finale = (int)b.toString().charAt(0); 
+                                                            for(int i=ini; i<=finale; i++){ parser.Vconju.add(Character.toString((char) i)) ;}  
+                                                            parser.Vconju=new LinkedList<String>();  :}
+       |Tk_caracter:a Tk_guion Tk_digito:b Tk_pcoma          {:  int ini = (int)a.toString().charAt(0); 
+                                                            int finale = (int)b.toString().charAt(0); 
+                                                            for(int i=ini; i<=finale; i++){ parser.Vconju.add(Character.toString((char) i)) ;}  
+                                                            parser.Vconju=new LinkedList<String>();  :}
+       |Tk_digito:a Tk_guion Tk_caracter:b Tk_pcoma          {:  int ini = (int)a.toString().charAt(0); 
+                                                            int finale = (int)b.toString().charAt(0); 
+                                                            for(int i=ini; i<=finale; i++){ parser.Vconju.add(Character.toString((char) i)) ;}  
+                                                            parser.Vconju=new LinkedList<String>();  :}
 ;
 
 /*     PARA EXPRESIONES REGULARES:  */
 
 
-EXP ::=  Tk_concat:b EXP:a EXP:c                  {: RESULT=new Nodo("Tk_concat", "", -1, a, c, false); :}
-	| Tk_or:b EXP:a EXP:c                     {: RESULT=new Nodo("Tk_or", "", -1, a, c , false); :}
+EXP ::=  Tk_concat:b EXP:a EXP:c                {: RESULT=new Nodo("Tk_concat", "", -1, a, c, false); :}
+	| Tk_or:b EXP:a EXP:c                   {: RESULT=new Nodo("Tk_or", "", -1, a, c , false); :}
 	| Tk_kleene:b EXP:a                     {: RESULT=new Nodo("Tk_kleene", "", -1, a, null , false);:}
 	| Tk_cer_positiva:b EXP:a               {: RESULT=new Nodo("Tk_cer_positiva", "", -1, a, null , false); :}
 	| Tk_inter:b EXP:a                      {: RESULT=new Nodo("Tk_inter", "", -1, a, null , false); :}  
-	| Tk_llavea:a IDEXP:b Tk_llavec:c         {: RESULT=b ;:}
-	| Tk_valor_comillas:a                 {: RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null, false); parser.contadorhojas++; :}
-        | Tk_digito:a                         {: RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
-        | Tk_caracter:a                       {: RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+	| Tk_llavea:a IDEXP:b Tk_llavec:c       {: RESULT=b ;:}
+	| Tk_valor_comillas:a                   {: RESULT=new Nodo("Tk_valor_comillas", a.toString(), parser.contadorhojas, null, null, false); parser.contadorhojas++; :}
+        | Tk_digito:a                           {: RESULT=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+        | Tk_caracter:a                         {: RESULT=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
 
 ;
-IDEXP ::= Tk_id:a        {:RESULT=new Nodo(a.toString(), "", parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+IDEXP ::= Tk_id:a        {:RESULT=new Nodo("Tk_id", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
 ;
 
-/*     PARA EXPRESIONES REGULARES:  */
+/*     PARA EJERCICIOS EXPRESIONES REGULARES:  */
 
-EJ ::=  Tk_id Tk_dosp Tk_valor_comillas Tk_pcoma  EJ    {:  :}
-        | Tk_id Tk_dosp Tk_valor_comillas Tk_pcoma      {:  :}
-        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA EJ         {:  :}
-        | Tk_CONJ Tk_dosp Tk_id Tk_flecha VA            {:  :}
+EJ ::=  Tk_id:a Tk_dosp Tk_valor_comillas:b Tk_pcoma  EJ    {: RESULT = new Ejercicio(b.toString(),a.toString());:}
+        | Tk_id:a Tk_dosp Tk_valor_comillas:b Tk_pcoma      {: RESULT = new Ejercicio(b.toString(),a.toString());:}
+        | P:a                                               {: parser.ListaConjuntos.add(a);:}
+;
+
+
+P ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b EJ         {: RESULT = new Conjunto(b, a.toString()); :}
+        | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b          {: RESULT = new Conjunto(b, a.toString()); :}
 ;
 

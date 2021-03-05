@@ -23,16 +23,14 @@ public class VentanaInterfaz extends javax.swing.JFrame {
      * Creates new form VentanaInterfaz
      */
     
-    private static LinkedList<Arbol> listadearboles = new LinkedList<>();
+    public static LinkedList<RegularExpresion> ListaArboles;
+    public static LinkedList<Conjunto> ListaConjuntos;
+    public static LinkedList<Ejercicio> ListaEjercicios;
     private static LinkedList<error> listaerrores = new LinkedList<>();
 
-    public static LinkedList<Arbol> getListadearboles() {
-        return listadearboles;
-    }
+   
 
-    public static void setListadearboles(LinkedList<Arbol> listadearboles) {
-        VentanaInterfaz.listadearboles = listadearboles;
-    }
+   
 
     public static LinkedList<error> getListaerrores() {
         return listaerrores;
@@ -168,21 +166,30 @@ public class VentanaInterfaz extends javax.swing.JFrame {
     private void AnalizarEntradasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnalizarEntradasActionPerformed
         try {   
         //se ejecuta el lexico y sintactico.
-            Nodo raiz;
+           
             Sintactico sintactico =new Sintactico(new Analizador_Lexico(new BufferedReader( new StringReader(MostrarArchivo.getText()))));
             sintactico.parse();
-        
+            ListaArboles = sintactico.getListaArboles();
+            ListaConjuntos = sintactico.getListaConjuntos();
+            ListaEjercicios = sintactico.getListaEjercicios();
         /*
             ---> Lo siguiente solo fue utilizado para fines de ejemplo 
             Analizador_Lexico lexico = new Analizador_Lexico(new BufferedReader( new StringReader(MostrarArchivo.getText())));
             
             while(lexico.next_token().value != null){
                 System.out.println(lexico.next_token());
-            }*/
-
+            }*/            
+                       
             //raiz = sintactico.getRaiz();
 
-
+            for(int i = 0; i < ListaArboles.size(); i++){
+                System.out.println("Expresion " + i);
+                if(ListaArboles.get(i) != null){
+                   ListaArboles.get(i).getRaiz().GraficarSintactico( ListaArboles.get(i).getNombre());
+                }
+                
+                
+            }
             Consola.setText(MostrarArchivo.getText());
             this.Consola.setText("Resultado: "+sintactico.resultado);
         } catch (Exception ex) {
