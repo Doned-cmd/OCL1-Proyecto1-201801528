@@ -1,4 +1,3 @@
-
 /*--------------- 1ra Area: Codigo de Usuario -----------------------*/
 //-------> importaciones, paquetes
 package Analizadores;
@@ -68,7 +67,7 @@ action code
 
 //------> declaracion de terminales 
 
-terminal String Tk_cer_positiva, Tk_kleene, Tk_or, Tk_concat, Tk_llavea, Tk_llavec, Tk_CONJ, Tk_flecha, Tk_pcoma, Tk_valor_comillas, 
+terminal String Tk_cer_positiva, Tk_kleene, Tk_or, Tk_concat, Tk_llavea, Tk_llavec, Tk_CONJ, Tk_flecha0, Tk_flecha1, Tk_pcoma, Tk_valor_comillas, 
 Tk_guion, Tk_inicio_Ejercicios, Tk_id, Tk_dosp, Tk_coma, Tk_caracter, Tk_digito, Tk_inter ;
 
 //------> declaracion de no terminales
@@ -104,14 +103,14 @@ S ::=   CONJUNTOS:a                           {: parser.ListaConjuntos.add(a);:}
         | EXPRESIONES:a                       {: parser.ListaArboles.add(a);:}
 	| EJERCICIOS:a                        {: :}
 ;
-CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b              {: RESULT = new Conjunto(b, a.toString()); :}
-            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b S              {: RESULT = new Conjunto(b, a.toString()); :}
-            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VAG:b S             {: RESULT = new Conjunto(b, a.toString()); :}
-            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VAG:b               {: RESULT = new Conjunto(b, a.toString()); :}
+CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VA:b              {: RESULT = new Conjunto(b, a.toString()); :}
+            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VA:b S              {: RESULT = new Conjunto(b, a.toString()); :}
+            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VAG:b S             {: RESULT = new Conjunto(b, a.toString()); :}
+            | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VAG:b               {: RESULT = new Conjunto(b, a.toString()); :}
 ;       
 
-EXPRESIONES ::= Tk_id:a Tk_flecha EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
-            | Tk_id:a Tk_flecha EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
+EXPRESIONES ::= Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
+            | Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
 ;
 
 
@@ -152,18 +151,36 @@ VAG ::= Tk_caracter:a Tk_guion Tk_caracter:b Tk_pcoma       {:  int ini = (int)a
 /*     PARA EXPRESIONES REGULARES:  */
 
 
-EXP ::=  Tk_concat:b EXP:a EXP:c                {: RESULT=new Nodo("Tk_concat", "", -1, a, c, false); :}
-	| Tk_or:b EXP:a EXP:c                   {: RESULT=new Nodo("Tk_or", "", -1, a, c , false); :}
-	| Tk_kleene:b EXP:a                     {: RESULT=new Nodo("Tk_kleene", "", -1, a, null , false);:}
-	| Tk_cer_positiva:b EXP:a               {: RESULT=new Nodo("Tk_cer_positiva", "", -1, a, null , false); :}
-	| Tk_inter:b EXP:a                      {: RESULT=new Nodo("Tk_inter", "", -1, a, null , false); :}  
-	| Tk_llavea:a IDEXP:b Tk_llavec:c       {: RESULT=b ;:}
-	| Tk_valor_comillas:a                   {: RESULT=new Nodo("Tk_valor_comillas", a.toString(), parser.contadorhojas, null, null, false); parser.contadorhojas++; :}
-        | Tk_digito:a                           {: RESULT=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
-        | Tk_caracter:a                         {: RESULT=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+EXP ::=  Tk_concat:b EXP:a EXP:c                {: boolean anulabilidad = false;
+                                                if((a.anulable==true)&&(c.anulable==true)){ anulabilidad = true;}
+                                                RESULT=new Nodo("Tk_concat", "", -1, a, c, anulabilidad);
+                                                :}
+
+	| Tk_or:b EXP:a EXP:c                   {: boolean anulabilidad = false;
+                                                if((a.anulable==true)||(c.anulable==true)){ anulabilidad = true;} 
+                                                RESULT=new Nodo("Tk_or", "", -1, a, c , false);
+                                                :}
+
+	| Tk_kleene:b EXP:a                     {: RESULT=new Nodo("Tk_kleene", "", -1, a, null , true);
+                                                
+                                                :}
+
+	| Tk_cer_positiva:b EXP:a               {:RESULT=new Nodo("Tk_cer_positiva", "", -1, a, null , a.anulable); 
+                                                
+                                                :}
+
+	| Tk_inter:b EXP:a                      {: 
+                                                RESULT=new Nodo("Tk_inter", "", -1, a, null , true); 
+                                                
+                                                :}  
+
+	| Tk_llavea:a IDEXP:b Tk_llavec:c       {: RESULT=b; b.Primerapos.add(b.id); :}
+	| Tk_valor_comillas:a                   {: Nodo nuevo=new Nodo("Tk_valor_comillas", a.toString(), parser.contadorhojas, null, null, false); nuevo.Primerapos.add(parser.contadorhojas); RESULT = nuevo; parser.contadorhojas++;:}
+        | Tk_digito:a                           {: Nodo nuevo=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); nuevo.Primerapos.add(parser.contadorhojas); RESULT = nuevo;  parser.contadorhojas++; :}
+        | Tk_caracter:a                         {: Nodo nuevo =new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); nuevo.Primerapos.add(parser.contadorhojas); RESULT = nuevo; parser.contadorhojas++;:}
 
 ;
-IDEXP ::= Tk_id:a        {:RESULT=new Nodo("Tk_id", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
+IDEXP ::= Tk_id:a       {:RESULT=new Nodo("Tk_id", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}
 ;
 
 /*     PARA EJERCICIOS EXPRESIONES REGULARES:  */
@@ -174,7 +191,7 @@ EJ ::=  Tk_id:a Tk_dosp Tk_valor_comillas:b Tk_pcoma  EJ    {: RESULT = new Ejer
 ;
 
 
-P ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b EJ         {: RESULT = new Conjunto(b, a.toString()); :}
-        | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha VA:b          {: RESULT = new Conjunto(b, a.toString()); :}
+P ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VA:b EJ         {: RESULT = new Conjunto(b, a.toString()); :}
+        | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VA:b          {: RESULT = new Conjunto(b, a.toString()); :}
 ;
 

@@ -45,7 +45,8 @@ reconocermenoscom = [^(\n)][^(\r)][^\"][!-\/]|[:-@]|[\[-\`]|[{-}]
 
 Tk_CONJ = CONJ
 
-Tk_Flecha = ->
+Tk_Flecha0 = -
+Tk_Flecha1 = >
 
 comentariosimple    = "//" .* 
 
@@ -103,8 +104,8 @@ Tk_id = {Caracter}({Caracter}|"_"|{digito})*
 {Tk_caracter}  {{System.out.println("Reconocio "+yytext()+" Tk_caracter"); return new Symbol(Simbolos.Tk_caracter, yycolumn, yyline, yytext());}}
 {Tk_id}  {{System.out.println("Reconocio "+yytext()+" Tk_id"); return new Symbol(Simbolos.Tk_id, yycolumn, yyline, yytext());}}
 
-
-{Tk_Flecha}      { System.out.println("Reconocio "+yytext()+" Tk_flecha"); return new Symbol(Simbolos.Tk_flecha, yycolumn, yyline, yytext());}
+{Tk_Flecha0}      { System.out.println("Reconocio "+yytext()+" Tk_flecha0"); return new Symbol(Simbolos.Tk_flecha0, yycolumn, yyline, yytext());}
+{Tk_Flecha1}      { System.out.println("Reconocio "+yytext()+" Tk_flecha1"); return new Symbol(Simbolos.Tk_flecha1, yycolumn, yyline, yytext());}
 {CadenaEnComillas} { String buffer = "" ;for (int i = 0; i < yytext().length(); i++) {if(!(yytext().charAt(i) == 34)){buffer = buffer + buffer.valueOf(yytext().charAt(i));}}; System.out.println("Reconocio "+buffer+" Tk_valor_comillas");  return new Symbol(Simbolos.Tk_valor_comillas, yycolumn, yyline,buffer);}
 
 

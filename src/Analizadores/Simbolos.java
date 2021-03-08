@@ -8,9 +8,11 @@ package Analizadores;
 /** CUP generated class containing symbol constants. */
 public class Simbolos {
   /* terminals */
-  public static final int Tk_guion = 12;
-  public static final int Tk_digito = 18;
-  public static final int Tk_inicio_Ejercicios = 13;
+  public static final int Tk_flecha1 = 10;
+  public static final int Tk_flecha0 = 9;
+  public static final int Tk_guion = 13;
+  public static final int Tk_digito = 19;
+  public static final int Tk_inicio_Ejercicios = 14;
   public static final int Tk_cer_positiva = 2;
   public static final int Tk_CONJ = 8;
   public static final int EOF = 0;
@@ -19,14 +21,13 @@ public class Simbolos {
   public static final int Tk_kleene = 3;
   public static final int Tk_or = 4;
   public static final int error = 1;
-  public static final int Tk_caracter = 17;
-  public static final int Tk_valor_comillas = 11;
-  public static final int Tk_dosp = 15;
-  public static final int Tk_inter = 19;
-  public static final int Tk_id = 14;
-  public static final int Tk_pcoma = 10;
-  public static final int Tk_coma = 16;
-  public static final int Tk_flecha = 9;
+  public static final int Tk_caracter = 18;
+  public static final int Tk_valor_comillas = 12;
+  public static final int Tk_dosp = 16;
+  public static final int Tk_inter = 20;
+  public static final int Tk_id = 15;
+  public static final int Tk_pcoma = 11;
+  public static final int Tk_coma = 17;
   public static final int Tk_concat = 5;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -38,7 +39,8 @@ public class Simbolos {
   "Tk_llavea",
   "Tk_llavec",
   "Tk_CONJ",
-  "Tk_flecha",
+  "Tk_flecha0",
+  "Tk_flecha1",
   "Tk_pcoma",
   "Tk_valor_comillas",
   "Tk_guion",

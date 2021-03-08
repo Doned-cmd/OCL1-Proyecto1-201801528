@@ -18,11 +18,16 @@ import java.io.PrintWriter;
  */
 public class Arbol {
     public Nodo Raiz;    
-
     
-    public Arbol(Nodo Raiz) {
-        this.Raiz = Raiz;      
-    }         
+    public Arbol(Nodo Raiz, int tamañohojas) {
+        this.Raiz = agregarTerminal(Raiz, tamañohojas);        
+    }
+    
+    public static Nodo agregarTerminal(Nodo raiz, int size) {
+        Nodo terminal = new Nodo("#", "", size, null, null, false);
+        Nodo nuevo = new Nodo("Tk_concat", "", -1, raiz, terminal, false);
+        return nuevo;
+    }
     public void GraficarSintactico(String nombreExpresion){
         String grafica = "Digraph Arbol_Sintactico{\n\n" + GraficaNodos(this.Raiz, "0") + "\n\n}";        
         GenerarDot(grafica, nombreExpresion);

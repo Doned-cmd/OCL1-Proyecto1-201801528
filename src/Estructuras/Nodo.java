@@ -24,6 +24,9 @@ public class Nodo {
     
     public ArrayList<Nodo> hijos = new ArrayList<>();
     
+    public ArrayList<Integer> Primerapos = new ArrayList<>();
+    public ArrayList<Integer> Ultimapos = new ArrayList<>();
+    
     public Nodo(String token, String lexema, int id, Nodo hijoIzq, Nodo hijoDer, boolean  anulable) {
         this.token = token;
         this.lexema = lexema;
@@ -35,7 +38,7 @@ public class Nodo {
             this.hijos.add(hijoIzq);
         }if (hijoDer != null){
             this.hijos.add(hijoDer);
-        }
+        }        
     }
-    
+        
 }
