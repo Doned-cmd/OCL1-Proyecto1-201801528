@@ -109,8 +109,8 @@ CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VA:b              
             | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VAG:b               {: RESULT = new Conjunto(b, a.toString()); :}
 ;       
 
-EXPRESIONES ::= Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b,parser.contadorhojas),a.toString()) ; :}
-            | Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b,parser.contadorhojas),a.toString()) ; :}
+EXPRESIONES ::= Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b,parser.contadorhojas),a.toString()) ; parser.contadorhojas++; :}
+            | Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b,parser.contadorhojas),a.toString()) ; parser.contadorhojas++; :}
 ;
 
 

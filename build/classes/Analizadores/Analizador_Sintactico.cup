@@ -109,8 +109,8 @@ CONJUNTOS ::=   Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VA:b              
             | Tk_CONJ Tk_dosp Tk_id:a Tk_flecha0 Tk_flecha1 VAG:b               {: RESULT = new Conjunto(b, a.toString()); :}
 ;       
 
-EXPRESIONES ::= Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
-            | Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b),a.toString()) ; :}
+EXPRESIONES ::= Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma  S         {: RESULT = new RegularExpresion(new Arbol(b,parser.contadorhojas),a.toString()) ; parser.contadorhojas++; :}
+            | Tk_id:a Tk_flecha0 Tk_flecha1 EXP:b Tk_pcoma              {: RESULT = new RegularExpresion(new Arbol(b,parser.contadorhojas),a.toString()) ; parser.contadorhojas++; :}
 ;
 
 
@@ -153,31 +153,54 @@ VAG ::= Tk_caracter:a Tk_guion Tk_caracter:b Tk_pcoma       {:  int ini = (int)a
 
 EXP ::=  Tk_concat:b EXP:a EXP:c                {: boolean anulabilidad = false;
                                                 if((a.anulable==true)&&(c.anulable==true)){ anulabilidad = true;}
-                                                RESULT=new Nodo("Tk_concat", "", -1, a, c, anulabilidad);
+                                                Nodo nuevo=new Nodo("Tk_concat", "", -1, a, c, anulabilidad);
+                                                nuevo.Primerapos = a.Primerapos;
+                                                if(a.anulable){
+                                                for(int i=0;i<c.Primerapos.size();i++){ nuevo.Primerapos.add(c.Primerapos.get(i));}
+                                                }
+                                                nuevo.Ultimapos = a.Ultimapos;
+                                                if(c.anulable){
+                                                for(int i=0;i<c.Ultimapos.size();i++){ nuevo.Ultimapos.add(c.Ultimapos.get(i));}
+                                                }
+                                                RESULT = nuevo;
                                                 :}
 
 	| Tk_or:b EXP:a EXP:c                   {: boolean anulabilidad = false;
                                                 if((a.anulable==true)||(c.anulable==true)){ anulabilidad = true;} 
-                                                RESULT=new Nodo("Tk_or", "", -1, a, c , false);
+                                                Nodo nuevo=new Nodo("Tk_or", "", -1, a, c , false);
+                                                nuevo.Primerapos = a.Primerapos;
+                                                for(int i=0;i<c.Primerapos.size();i++){ nuevo.Primerapos.add(c.Primerapos.get(i));}
+                                                nuevo.Ultimapos = a.Ultimapos;
+                                                for(int i=0;i<c.Ultimapos.size();i++){ nuevo.Ultimapos.add(c.Ultimapos.get(i));}
+                                                RESULT = nuevo;
                                                 :}
 
-	| Tk_kleene:b EXP:a                     {: RESULT=new Nodo("Tk_kleene", "", -1, a, null , true);
-                                                
+	| Tk_kleene:b EXP:a                     {: Nodo nuevo=new Nodo("Tk_kleene", "", -1, a, null , true);
+                                                nuevo.Primerapos = a.Primerapos;
+                                                nuevo.Ultimapos = a.Ultimapos;
+                                                RESULT = nuevo;
                                                 :}
 
-	| Tk_cer_positiva:b EXP:a               {:RESULT=new Nodo("Tk_cer_positiva", "", -1, a, null , a.anulable); 
-                                                
+	| Tk_cer_positiva:b EXP:a               {:Nodo nuevo=new Nodo("Tk_cer_positiva", "", -1, a, null , a.anulable); 
+                                                nuevo.Primerapos = a.Primerapos;
+                                                nuevo.Ultimapos = a.Ultimapos;
+                                                RESULT = nuevo;
                                                 :}
 
 	| Tk_inter:b EXP:a                      {: 
-                                                RESULT=new Nodo("Tk_inter", "", -1, a, null , true); 
-                                                
+                                                Nodo nuevo=new Nodo("Tk_inter", "", -1, a, null , true); 
+                                                nuevo.Primerapos = a.Primerapos;
+                                                nuevo.Ultimapos = a.Ultimapos;
+                                                RESULT = nuevo;
                                                 :}  
 
-	| Tk_llavea:a IDEXP:b Tk_llavec:c       {: RESULT=b; b.Primerapos.add(b.id); :}
-	| Tk_valor_comillas:a                   {: Nodo nuevo=new Nodo("Tk_valor_comillas", a.toString(), parser.contadorhojas, null, null, false); nuevo.Primerapos.add(parser.contadorhojas); RESULT = nuevo; parser.contadorhojas++;:}
-        | Tk_digito:a                           {: Nodo nuevo=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); nuevo.Primerapos.add(parser.contadorhojas); RESULT = nuevo;  parser.contadorhojas++; :}
-        | Tk_caracter:a                         {: Nodo nuevo =new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); nuevo.Primerapos.add(parser.contadorhojas); RESULT = nuevo; parser.contadorhojas++;:}
+	| Tk_llavea:a IDEXP:b Tk_llavec:c       {: b.Primerapos.add(b.id); b.Ultimapos.add(b.id); RESULT=b;  :}
+	| Tk_valor_comillas:a                   {: Nodo nuevo=new Nodo("Tk_valor_comillas", a.toString(), parser.contadorhojas, null, null, false); 
+                                                nuevo.Primerapos.add(parser.contadorhojas); nuevo.Ultimapos.add(parser.contadorhojas); RESULT = nuevo; parser.contadorhojas++;:}
+        | Tk_digito:a                           {: Nodo nuevo=new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false); 
+                                                nuevo.Primerapos.add(parser.contadorhojas); nuevo.Ultimapos.add(parser.contadorhojas); RESULT = nuevo;  parser.contadorhojas++; :}
+        | Tk_caracter:a                         {: Nodo nuevo =new Nodo("Tk_caracter", a.toString(), parser.contadorhojas, null, null , false);
+                                                 nuevo.Primerapos.add(parser.contadorhojas); nuevo.Ultimapos.add(parser.contadorhojas); RESULT = nuevo; parser.contadorhojas++;:}
 
 ;
 IDEXP ::= Tk_id:a       {:RESULT=new Nodo("Tk_id", a.toString(), parser.contadorhojas, null, null , false); parser.contadorhojas++; :}

@@ -23,11 +23,12 @@ public class Arbol {
         this.Raiz = agregarTerminal(Raiz, tamañohojas);        
     }
     
-    public static Nodo agregarTerminal(Nodo raiz, int size) {
+    private static Nodo agregarTerminal(Nodo raiz, int size) {
         Nodo terminal = new Nodo("#", "", size, null, null, false);
         Nodo nuevo = new Nodo("Tk_concat", "", -1, raiz, terminal, false);
         return nuevo;
     }
+    
     public void GraficarSintactico(String nombreExpresion){
         String grafica = "Digraph Arbol_Sintactico{\n\n" + GraficaNodos(this.Raiz, "0") + "\n\n}";        
         GenerarDot(grafica, nombreExpresion);
@@ -45,6 +46,7 @@ public class Arbol {
             r = r + "node" + i + " -> node" + i + k + "\n";
             r= r + GraficaNodos(nodo.hijos.get(j), ""+i+k);
             k++;
+            System.out.println(nodo.id);
         }
         
         if( !(nodo.lexema.equals("")) ){
@@ -52,6 +54,7 @@ public class Arbol {
             nodoToken = nodoToken.replace("\"", "");
             r += "node" + i + "c[label = \"" + nodoToken + "\"];\n";
             r += "node" + i + " -> node" + i + "c\n";
+            System.out.println(nodo.id);
         }
         
         return r;
@@ -66,29 +69,33 @@ public class Arbol {
             escritor.println(cadena);
             escritor.close();
             fichero.close();
-            reportar();
+            //reportar(nombre);
         } catch (Exception e) {
             System.out.println("error en generar dot");
             e.printStackTrace();
         }
     }
     
-    public void reportar() throws IOException {
-        
-        String file_input_path = "Arbol_Sintactico.dot";
-        String do_path = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe";
-        
-        String file_get_path =  "Arbol_Sintactico.jpg" ;
-        try {
-            ProcessBuilder pBuilder;
-            pBuilder = new ProcessBuilder(do_path, "-Tjpg", "-o", file_get_path, file_input_path);
-            pBuilder.redirectErrorStream(true);
-            pBuilder.start();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-       
-     
-       Desktop.getDesktop().open(new File(file_get_path));
+//    public void reportar(String nombre) throws IOException {
+//        
+//        String file_input_path = "Arbol_"+nombre+".dot";
+//        String do_path = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
+//        
+//        String file_get_path =  "Arbol_Sintactico_"+nombre+".jpg" ;
+//        try {
+//            ProcessBuilder pBuilder;
+//            pBuilder = new ProcessBuilder(do_path, "-Tjpg", "-o", file_get_path, file_input_path);
+//            pBuilder.redirectErrorStream(true);
+//            pBuilder.start();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//       
+//     
+//       Desktop.getDesktop().open(new File(file_get_path));
+//    }
+    public void reportar() throws IOException{
+        Runtime runtime = Runtime.getRuntime();
+        Process p = null;
     }
 }

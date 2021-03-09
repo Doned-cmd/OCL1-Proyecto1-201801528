@@ -713,11 +713,11 @@ public class Analizador_Lexico implements java_cup.runtime.Scanner {
             }
           case 28: break;
           case 6: 
-            { System.out.println("Reconocio "+yytext()+" Tk_flecha0"); return new Symbol(Simbolos.Tk_flecha, yycolumn, yyline, yytext());
+            { System.out.println("Reconocio "+yytext()+" Tk_flecha0"); return new Symbol(Simbolos.Tk_flecha0, yycolumn, yyline, yytext());
             }
           case 29: break;
           case 7: 
-            { System.out.println("Reconocio "+yytext()+" Tk_flecha1"); return new Symbol(Simbolos.Tk_flecha, yycolumn, yyline, yytext());
+            { System.out.println("Reconocio "+yytext()+" Tk_flecha1"); return new Symbol(Simbolos.Tk_flecha1, yycolumn, yyline, yytext());
             }
           case 30: break;
           case 8: 

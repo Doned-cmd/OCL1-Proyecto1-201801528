@@ -27,6 +27,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
     public static LinkedList<Conjunto> ListaConjuntos;
     public static LinkedList<Ejercicio> ListaEjercicios;
     private static LinkedList<error> listaerrores = new LinkedList<>();
+    private static int contador = 0;
 
    
 
@@ -185,7 +186,11 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             for(int i = 0; i < ListaArboles.size(); i++){
                 System.out.println("Expresion " + i);
                 if(ListaArboles.get(i) != null){
-                   ListaArboles.get(i).getRaiz().GraficarSintactico( ListaArboles.get(i).getNombre());
+                   ListaArboles.get(i).getArbol().GraficarSintactico( ListaArboles.get(i).getNombre());
+                   IniciarTablaPreorden(ListaArboles.get(i).getArbol().Raiz, i);
+                   CrearTablaPreorden(ListaArboles.get(i).getArbol().Raiz, i);
+                   ListaArboles.get(i).GraficarTablaSiguientes(ListaArboles.get(i).getNombre());
+                   contador = 0 ;
                 }
                 
                 
@@ -201,6 +206,89 @@ public class VentanaInterfaz extends javax.swing.JFrame {
         
     }//GEN-LAST:event_AnalizarEntradasActionPerformed
 
+    public static void CrearTablaPreorden(Nodo padre, int i){
+        if (padre != null){
+            crearTabla(padre, i);
+            System.out.println(padre.id+padre.lexema+padre.anulable+padre.token);
+            CrearTablaPreorden(padre.hijoIzq, i);
+            CrearTablaPreorden(padre.hijoDer, i);   
+        }
+    }
+    public static void IniciarTablaPreorden(Nodo padre, int i){
+        if (padre != null){
+            IniciarTabla(padre, i);
+            //System.out.println(padre.id+padre.lexema+padre.anulable+padre.token);
+            IniciarTablaPreorden(padre.hijoIzq, i);
+            IniciarTablaPreorden(padre.hijoDer, i);   
+        }
+    } 
+    private static void crearTabla(Nodo padre, int i){
+        if (padre.token=="Tk_concat"){
+            for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
+                for (int k = 0; k < padre.hijoDer.Primerapos.size(); k++) {
+                    for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
+                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(i)){
+                            if(ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.indexOf(padre.hijoDer.Primerapos.get(k))==-1){
+                                ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.add(padre.hijoDer.Primerapos.get(k));
+                                //System.out.println("siguiente agregado");
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+        else if(padre.token=="Tk_cer_positiva"){
+            for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
+                for (int k = 0; k < padre.hijoIzq.Primerapos.size(); k++) {
+                    for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
+                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(i)){
+                            if(ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.indexOf(padre.hijoIzq.Primerapos.get(k))==-1){
+                                ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.add(padre.hijoIzq.Primerapos.get(k));
+                            //System.out.println("siguiente agregado");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if(padre.token=="Tk_kleene"){
+            for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
+                for (int k = 0; k < padre.hijoIzq.Primerapos.size(); k++) {
+                    for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
+                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(i)){
+                            if(ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.indexOf(padre.hijoIzq.Primerapos.get(k))==-1){
+                                ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.add(padre.hijoIzq.Primerapos.get(k));
+                                //System.out.println("siguiente agregado");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private static void IniciarTabla(Nodo padre,int i){
+        if (padre.token=="Tk_valor_comillas"){
+            FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"Tk_valor_comillas", padre.lexema);
+            ListaArboles.get(i).CuadoSiguientes.add(nuevafila);
+            //System.out.println("fila generada");
+        }
+        else if(padre.token=="Tk_caracter"){
+            FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"Tk_caracter", padre.lexema);
+            ListaArboles.get(i).CuadoSiguientes.add(nuevafila);
+            //System.out.println("fila generada");
+        }   
+        else if (padre.token=="Tk_id"){
+            FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"Tk_id", padre.lexema);
+            ListaArboles.get(i).CuadoSiguientes.add(nuevafila);
+            //System.out.println("fila generada");
+        }
+        else if (padre.token=="#"){
+            FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"#", "#");
+            ListaArboles.get(i).CuadoSiguientes.add(nuevafila);          
+            //System.out.println("fila generada");
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -235,6 +323,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             }
         });
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AnalizarEntradas;
