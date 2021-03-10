@@ -227,7 +227,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
                 for (int k = 0; k < padre.hijoDer.Primerapos.size(); k++) {
                     for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
-                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(i)){
+                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(j)){
                             if(ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.indexOf(padre.hijoDer.Primerapos.get(k))==-1){
                                 ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.add(padre.hijoDer.Primerapos.get(k));
                                 //System.out.println("siguiente agregado");
@@ -242,7 +242,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
                 for (int k = 0; k < padre.hijoIzq.Primerapos.size(); k++) {
                     for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
-                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(i)){
+                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(j)){
                             if(ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.indexOf(padre.hijoIzq.Primerapos.get(k))==-1){
                                 ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.add(padre.hijoIzq.Primerapos.get(k));
                             //System.out.println("siguiente agregado");
@@ -256,7 +256,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
                 for (int k = 0; k < padre.hijoIzq.Primerapos.size(); k++) {
                     for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
-                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(i)){
+                        if(ListaArboles.get(i).CuadoSiguientes.get(l).id == padre.hijoIzq.Ultimapos.get(j)){
                             if(ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.indexOf(padre.hijoIzq.Primerapos.get(k))==-1){
                                 ListaArboles.get(i).CuadoSiguientes.get(l).Siguientes.add(padre.hijoIzq.Primerapos.get(k));
                                 //System.out.println("siguiente agregado");

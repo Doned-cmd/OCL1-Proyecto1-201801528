@@ -25,7 +25,25 @@ public class Arbol {
     
     private static Nodo agregarTerminal(Nodo raiz, int size) {
         Nodo terminal = new Nodo("#", "", size, null, null, false);
+        terminal.Primerapos.add(terminal.id);
+        terminal.Ultimapos.add(terminal.id);
         Nodo nuevo = new Nodo("Tk_concat", "", -1, raiz, terminal, false);
+        nuevo.Primerapos = nuevo.hijoIzq.Primerapos;
+        if(nuevo.hijoIzq.anulable){
+            for (int i = 0; i < nuevo.hijoDer.Primerapos.size(); i++) {
+                if(nuevo.Primerapos.indexOf(nuevo.hijoDer.Primerapos.get(i))==-1){
+                    nuevo.Primerapos.add(nuevo.hijoDer.Primerapos.get(i));
+                }
+            }
+        }
+        nuevo.Ultimapos = nuevo.hijoDer.Ultimapos;
+        if(nuevo.hijoDer.anulable){
+            for (int i = 0; i < nuevo.hijoIzq.Ultimapos.size(); i++) {
+                if (nuevo.Ultimapos.indexOf(nuevo.hijoIzq.Ultimapos.get(i))==-1){
+                    nuevo.Ultimapos.add(nuevo.hijoIzq.Ultimapos.get(i));
+                }
+            }
+        }
         return nuevo;
     }
     

@@ -574,11 +574,11 @@ class CUP$Sintactico$actions {
                                                 Nodo nuevo=new Nodo("Tk_concat", "", -1, a, c, anulabilidad);
                                                 nuevo.Primerapos = a.Primerapos;
                                                 if(a.anulable){
-                                                for(int i=0;i<c.Primerapos.size();i++){ nuevo.Primerapos.add(c.Primerapos.get(i));}
+                                                for(int i=0;i<c.Primerapos.size();i++){if(nuevo.Primerapos.indexOf(c.Primerapos.get(i))==-1){ nuevo.Primerapos.add(c.Primerapos.get(i));}}
                                                 }
-                                                nuevo.Ultimapos = a.Ultimapos;
+                                                nuevo.Ultimapos = c.Ultimapos;
                                                 if(c.anulable){
-                                                for(int i=0;i<c.Ultimapos.size();i++){ nuevo.Ultimapos.add(c.Ultimapos.get(i));}
+                                                for(int i=0;i<a.Ultimapos.size();i++){if(nuevo.Ultimapos.indexOf(a.Ultimapos.get(i))==-1){ nuevo.Ultimapos.add(a.Ultimapos.get(i));}}
                                                 }
                                                 RESULT = nuevo;
                                                 
@@ -601,11 +601,11 @@ class CUP$Sintactico$actions {
 		Nodo c = (Nodo)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
 		 boolean anulabilidad = false;
                                                 if((a.anulable==true)||(c.anulable==true)){ anulabilidad = true;} 
-                                                Nodo nuevo=new Nodo("Tk_or", "", -1, a, c , false);
+                                                Nodo nuevo=new Nodo("Tk_or", "", -1, a, c , anulabilidad);
                                                 nuevo.Primerapos = a.Primerapos;
-                                                for(int i=0;i<c.Primerapos.size();i++){ nuevo.Primerapos.add(c.Primerapos.get(i));}
+                                                for(int i=0;i<c.Primerapos.size();i++){if(nuevo.Primerapos.indexOf(c.Primerapos.get(i))==-1){ nuevo.Primerapos.add(c.Primerapos.get(i));}}
                                                 nuevo.Ultimapos = a.Ultimapos;
-                                                for(int i=0;i<c.Ultimapos.size();i++){ nuevo.Ultimapos.add(c.Ultimapos.get(i));}
+                                                for(int i=0;i<c.Ultimapos.size();i++){if(nuevo.Ultimapos.indexOf(c.Ultimapos.get(i))==-1){ nuevo.Ultimapos.add(c.Ultimapos.get(i));}}
                                                 RESULT = nuevo;
                                                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("EXP",4, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
