@@ -58,9 +58,17 @@ public class Arbol {
         String r = "";
         String nodoTerm = nodo.token;
         nodoTerm = nodoTerm.replace("\"", "");
-        r= "node" + i + "[label = \"" + nodoTerm + "\"];\n";
+        String primeros = "";
+        String utlimos = "";
+        for (int j = 0; j < nodo.Primerapos.size(); j++) {
+            primeros = primeros + nodo.Primerapos.get(j) +",";
+        }
+        for (int j = 0; j < nodo.Ultimapos.size(); j++) {
+            utlimos = utlimos + nodo.Ultimapos.get(j) +",";
+        }
+        r= "node" + i + "[label = \" {" +nodo.anulable+"|"+"{["+primeros+"]"+"|"+nodoTerm+"|"+"[" +utlimos+ "]}\"];\n";
         
-        for(int j =0 ; j<=nodo.hijos.size()-1; j++){
+        for(int j =0 ; j<nodo.hijos.size(); j++){
             r = r + "node" + i + " -> node" + i + k + "\n";
             r= r + GraficaNodos(nodo.hijos.get(j), ""+i+k);
             k++;
