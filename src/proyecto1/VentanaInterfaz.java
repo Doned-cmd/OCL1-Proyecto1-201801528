@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Estructuras.*;
+import java.util.ArrayList;
 /**
  *
  * @author bryan
@@ -184,12 +185,14 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             //raiz = sintactico.getRaiz();
 
             for(int i = 0; i < ListaArboles.size(); i++){
-                System.out.println("Expresion " + i);
+                System.out.println("Expresion: " + ListaArboles.get(i).getNombre());
                 if(ListaArboles.get(i) != null){
                    ListaArboles.get(i).getArbol().GraficarSintactico( ListaArboles.get(i).getNombre());
                    IniciarTablaPreorden(ListaArboles.get(i).getArbol().Raiz, i);
                    CrearTablaPreorden(ListaArboles.get(i).getArbol().Raiz, i);
                    ListaArboles.get(i).GraficarTablaSiguientes(ListaArboles.get(i).getNombre());
+                   IniciarTablaTransiciones(ListaArboles.get(i).CuadoSiguientes, i);
+                   ListaArboles.get(i).GraficarTablaTransiciones(ListaArboles.get(i).getNombre());
                    contador = 0 ;
                 }
                 
@@ -223,7 +226,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
         }
     } 
     private static void crearTabla(Nodo padre, int i){
-        if (padre.token=="Tk_concat"){
+        if (padre.token.equals("Tk_concat")){
             for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
                 for (int k = 0; k < padre.hijoDer.Primerapos.size(); k++) {
                     for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
@@ -238,7 +241,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
             }
             
         }
-        else if(padre.token=="Tk_cer_positiva"){
+        else if(padre.token.equals("Tk_cer_positiva")){
             for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
                 for (int k = 0; k < padre.hijoIzq.Primerapos.size(); k++) {
                     for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
@@ -252,7 +255,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
                 }
             }
         }
-        else if(padre.token=="Tk_kleene"){
+        else if(padre.token.equals("Tk_kleene")){
             for(int j = 0; j<padre.hijoIzq.Ultimapos.size();j++){
                 for (int k = 0; k < padre.hijoIzq.Primerapos.size(); k++) {
                     for (int l = 0; l < ListaArboles.get(i).CuadoSiguientes.size(); l++) {
@@ -268,27 +271,125 @@ public class VentanaInterfaz extends javax.swing.JFrame {
         }
     }
     private static void IniciarTabla(Nodo padre,int i){
-        if (padre.token=="Tk_valor_comillas"){
+        if (padre.token.equals("Tk_valor_comillas")){
             FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"Tk_valor_comillas", padre.lexema);
             ListaArboles.get(i).CuadoSiguientes.add(nuevafila);
             //System.out.println("fila generada");
         }
-        else if(padre.token=="Tk_caracter"){
+        else if(padre.token.equals("Tk_caracter")){
             FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"Tk_caracter", padre.lexema);
             ListaArboles.get(i).CuadoSiguientes.add(nuevafila);
             //System.out.println("fila generada");
         }   
-        else if (padre.token=="Tk_id"){
+        else if (padre.token.equals("Tk_id")){
             FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"Tk_id", padre.lexema);
             ListaArboles.get(i).CuadoSiguientes.add(nuevafila);
             //System.out.println("fila generada");
         }
-        else if (padre.token=="#"){
+        else if (padre.token.equals("#")){
             FilaSiguiente nuevafila = new FilaSiguiente(padre.id,"#", "#");
             ListaArboles.get(i).CuadoSiguientes.add(nuevafila);          
             //System.out.println("fila generada");
         }
     }
+    
+    private static void IniciarTablaTransiciones(LinkedList<FilaSiguiente> tablasiguientes, int expresionregular){
+        int contador = 0;
+        Estado inicial =new Estado(contador);
+        inicial.Siguientes=ListaArboles.get(expresionregular).arbol.Raiz.Primerapos;
+        contador++;
+        ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.add(inicial);
+        
+        for (int i = 0; i < tablasiguientes.size(); i++) {//Recorriendo cada fila de la tabla siguientes
+            //AGREGARLE LOS SIMBOLOS
+            if(ListaArboles.get(expresionregular).TablaDeTransiciones.Simbolos.indexOf(tablasiguientes.get(i).lexema)==-1){
+                ListaArboles.get(expresionregular).TablaDeTransiciones.Simbolos.add(tablasiguientes.get(i).lexema);
+            }
+            
+            //AGREGARLE LOS ESTADOS junto con los siguientes que representa cada estado
+            
+            if (!YaEstaEnEstados(tablasiguientes.get(i).Siguientes, expresionregular)){
+                Estado nuevo =new Estado(contador);
+                nuevo.Siguientes=tablasiguientes.get(i).Siguientes;
+                contador++;
+                ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.add(nuevo);
+            }
+           
+        }
+        IngresarTransiciones(tablasiguientes,expresionregular);
+    }
+    
+    private static boolean YaEstaEnEstados( ArrayList<Integer> Siguientes2, int expresionregular){
+        for (int i = 0; i <  ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.size(); i++) {
+            if(ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Siguientes.size()==Siguientes2.size()){
+                if (SiguientesSonIguales(ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Siguientes,Siguientes2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static boolean SiguientesSonIguales(ArrayList<Integer> Siguientes1, ArrayList<Integer> Siguientes2){       
+        int contador = 0;
+        for (int i = 0; i < Siguientes1.size(); i++) {
+            for (int j = 0; j < Siguientes2.size(); j++) {
+                if(Siguientes1.get(i).equals(Siguientes2.get(j))){
+                    contador++;
+                    break;
+                }
+            }
+        }
+        if (contador==Siguientes1.size()){
+            return true;
+        }
+        return false;
+    }
+    
+    private static void IngresarTransiciones(LinkedList<FilaSiguiente> tablasiguientes, int expresionregular){
+        for (int i = 0; i < ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.size(); i++) {
+            for (int j = 0; j < ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Siguientes.size(); j++) {
+               FilaSiguiente resultado = BuscarEnTabla(ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Siguientes.get(j), tablasiguientes);
+                if (!ExisteTransicion(expresionregular, i, resultado)) {
+                    Transicion nueva = new Transicion(resultado.lexema, BuscarEnEstados(expresionregular, resultado.Siguientes));
+                    ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Transisiones.add(nueva);
+                    System.out.println("Se agrego una transicion, con el simbolo: "+ nueva.Simbolo+" se va a: "+nueva.EstadoDestino);
+                }
+               
+            }
+        }
+    }
+    private static int BuscarEnEstados(int expresionregular,ArrayList<Integer> Siguientes2){
+        int coincidencia = 0;
+        for (int i = 0; i < ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.size(); i++) {
+            if(ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Siguientes.size()==Siguientes2.size()){                
+                if (SiguientesSonIguales(ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Siguientes,Siguientes2)) {
+                    coincidencia = ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(i).Id;
+                }
+            }
+        }
+        return coincidencia;
+    }
+    
+    private static boolean ExisteTransicion(int expresionregular, int EstadoActual,FilaSiguiente siguientes){
+        for (int j = 0; j < ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(EstadoActual).Transisiones.size(); j++) {
+            if (ListaArboles.get(expresionregular).TablaDeTransiciones.Estados.get(EstadoActual).Transisiones.get(j).Simbolo.equals(siguientes.lexema)) {
+                return true;
+            }
+        }            
+        return false;
+    }
+    
+    private static FilaSiguiente BuscarEnTabla(int id,LinkedList<FilaSiguiente> tablasiguientes){
+        for (int i = 0; i < tablasiguientes.size(); i++) {
+            if (tablasiguientes.get(i).id == id) {
+                return tablasiguientes.get(i);
+            }
+        }
+        return null;
+    }
+    
+    
     /**
      * @param args the command line arguments
      */

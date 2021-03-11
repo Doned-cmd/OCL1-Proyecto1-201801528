@@ -18,6 +18,7 @@ public class RegularExpresion {
     public Arbol arbol; 
     public String Nombre;
     public LinkedList<FilaSiguiente> CuadoSiguientes = new LinkedList<>();
+    public TablaTransiciones TablaDeTransiciones = new TablaTransiciones();
 
     public RegularExpresion(Arbol arbol, String Nombre) {
         this.arbol = arbol;
@@ -40,18 +41,54 @@ public class RegularExpresion {
         this.Nombre = Nombre;
     }
     
-    
+    public void GraficarTablaTransiciones(String nombreExpresion){
+        String grafica = "digraph Arbol_Sintactico{\n\n"  + "arset [label=<" +"\n"+" <TABLE ALIGN=\"LEFT\">"+GraficarTransiciones(this.TablaDeTransiciones);        
+        GenerarDot(grafica, "CuadroTransiciones_"+nombreExpresion);
+    }
     
     public void GraficarTablaSiguientes(String nombreExpresion){
         String grafica = "digraph Arbol_Sintactico{\n\n"  + "arset [label=<" +"\n"+" <TABLE ALIGN=\"LEFT\">"+GraficaNodos(this.CuadoSiguientes);        
-        GenerarDot(grafica, nombreExpresion);
+        GenerarDot(grafica, "CuadroSiguientes_"+nombreExpresion);
 
     }
     
+    private String GraficarTransiciones(TablaTransiciones tabla){
+        String r ="";
+        r = r + "<TR>" +"\n <TD>ESTADOS</TD>" ;
+        for (int i = 0; i < tabla.Simbolos.size(); i++) {
+            r= r+"<TD>"+tabla.Simbolos.get(i)+"</TD>"+"\n";                                    
+        }
+        r = r + "</TR>" ;
+        
+        for (int i = 0; i < tabla.Estados.size(); i++) {
+            r = r + "<TR>" +"\n";
+            String siguientes = "{ ";
+            for (int j = 0; j < tabla.Estados.get(i).Siguientes.size(); j++) {
+                siguientes = siguientes+tabla.Estados.get(i).Siguientes.get(j)+", ";
+            }
+            siguientes = siguientes+" }";
+            r =r + "<TD>"+tabla.Estados.get(i).Id+siguientes+"</TD>";
+            for (int j = 0; j < tabla.Simbolos.size(); j++) {
+                r= r+"<TD>"+BuscarEnTransiciones(tabla.Estados.get(i).Transisiones, tabla.Simbolos.get(j)) +"</TD>"+"\n"; 
+            }
+            r = r + "</TR>"+"\n";
+        }
+        r = r +"</TABLE>"+">, ];"+"\n\n}"; 
+        return r;
+    }
+    
+    private String BuscarEnTransiciones(LinkedList<Transicion> Transisiones, String simobolo){
+        for (int i = 0; i < Transisiones.size(); i++) {
+            if ( Transisiones.get(i).Simbolo.equals(simobolo)) {
+                return Transisiones.get(i).EstadoDestino+"";
+            }
+        }
+        return "-";
+    }
     
     private String GraficaNodos(LinkedList<FilaSiguiente> tabla){
         
-        String r="";
+        String r="<TR><TD>ID</TD><TD>Simbolo</TD><TD>Siguientes</TD></TR>\n";
         for (int j = 0; j < tabla.size(); j++) {
             r = r+"<TR>";
             String lexema = tabla.get(j).lexema;
@@ -77,7 +114,7 @@ public class RegularExpresion {
         FileWriter fichero = null;
         PrintWriter escritor = null;
         try{
-            fichero = new FileWriter("CuadroSiguientes_"+nombre+".dot");
+            fichero = new FileWriter(nombre+".dot");
             escritor = new PrintWriter(fichero);
             escritor.println(cadena);
             escritor.close();
