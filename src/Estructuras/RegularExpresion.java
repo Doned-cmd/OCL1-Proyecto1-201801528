@@ -49,7 +49,23 @@ public class RegularExpresion {
     public void GraficarTablaSiguientes(String nombreExpresion){
         String grafica = "digraph Arbol_Sintactico{\n\n"  + "arset [label=<" +"\n"+" <TABLE ALIGN=\"LEFT\">"+GraficaNodos(this.CuadoSiguientes);        
         GenerarDot(grafica, "CuadroSiguientes_"+nombreExpresion);
-
+    }
+    
+    public void GraficarAFD(String nombreExpresion){
+        String grafica = "Digraph Arbol_Sintactico{\n\n" +GenerarAFD(this.TablaDeTransiciones)+ "\n\n}";        
+        GenerarDot(grafica, "AFD_"+nombreExpresion);
+    }
+    
+    private String GenerarAFD(TablaTransiciones tabla){
+        String r = "";
+        for (int i = 0; i < tabla.Estados.size(); i++) {
+            r= r+"S" + tabla.Estados.get(i).Id + "[label = \"" + "S"+ tabla.Estados.get(i).Id + "\"];\n";
+            for (int j = 0; j < tabla.Estados.get(i).Transisiones.size(); j++) {
+                r = r +"S"+tabla.Estados.get(i).Id+" -> " + "S"+tabla.Estados.get(i).Transisiones.get(j).EstadoDestino+"[label= \""+ tabla.Estados.get(i).Transisiones.get(j).Simbolo +"\"];"+"\n"; 
+            }
+        }
+        
+        return  r;
     }
     
     private String GraficarTransiciones(TablaTransiciones tabla){

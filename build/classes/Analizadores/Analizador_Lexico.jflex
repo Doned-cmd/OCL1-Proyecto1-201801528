@@ -39,7 +39,9 @@ LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]        
 valor = ([0-9]|[a-zA-ZñÑ])*
 
-reconocerASCII = [^(\n)][^(\r)][!-/]|[:-@]|[\[-\`]|[{-}]
+reconocerASCII = [^(\n)][^!][^>][^(\r)][!-/]|[:-@]|[\[-\`]|[{-}]
+
+ASCII2 = [#|\$|&|\"|\'|%|(|)|\*|\+|,|.|/|:|;|=|\?|@|\[|\\|\]|\^|_|`|\{|\||\}]
 
 reconocermenoscom = [^(\n)][^(\r)][^\"][!-\/]|[:-@]|[\[-\`]|[{-}]
 
@@ -50,11 +52,11 @@ Tk_Flecha1 = >
 
 comentariosimple    = "//" .* 
 
-comentarioencerrado = "<!" ({valor}|{digito}|{reconocerASCII}|\n|\s|","|".")* "!>"
+comentarioencerrado = "<!" ([^"!>"])* "!>"
 
-CadenaEnComillas = \" [^\"].* \"
+CadenaEnComillas = \" [^\"]* \"
 
-Tk_caracter = {Caracter}|{digito}|reconocermenoscom
+Tk_caracter = {Caracter}|{digito}|{ASCII2}
 
 
 

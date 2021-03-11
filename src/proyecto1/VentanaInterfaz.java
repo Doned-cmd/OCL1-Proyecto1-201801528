@@ -193,6 +193,7 @@ public class VentanaInterfaz extends javax.swing.JFrame {
                    ListaArboles.get(i).GraficarTablaSiguientes(ListaArboles.get(i).getNombre());
                    IniciarTablaTransiciones(ListaArboles.get(i).CuadoSiguientes, i);
                    ListaArboles.get(i).GraficarTablaTransiciones(ListaArboles.get(i).getNombre());
+                   ListaArboles.get(i).GraficarAFD(ListaArboles.get(i).getNombre());
                    contador = 0 ;
                 }
                 
