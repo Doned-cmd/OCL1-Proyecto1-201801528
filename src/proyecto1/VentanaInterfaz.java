@@ -94,6 +94,11 @@ public class VentanaInterfaz extends javax.swing.JFrame {
         jLabel2.setText("Archivo de Entrada:");
 
         GenerarAutomatas.setText("Generar Automatas");
+        GenerarAutomatas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GenerarAutomatasActionPerformed(evt);
+            }
+        });
 
         AnalizarEntradas.setText("Analizar Entradas");
         AnalizarEntradas.addActionListener(new java.awt.event.ActionListener() {
@@ -166,7 +171,14 @@ public class VentanaInterfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_RealizarOpcionArchivoActionPerformed
 
     private void AnalizarEntradasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnalizarEntradasActionPerformed
-        try {   
+        
+        
+        
+        
+    }//GEN-LAST:event_AnalizarEntradasActionPerformed
+
+    private void GenerarAutomatasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerarAutomatasActionPerformed
+       try {   
         //se ejecuta el lexico y sintactico.
            
             Sintactico sintactico =new Sintactico(new Analizador_Lexico(new BufferedReader( new StringReader(MostrarArchivo.getText()))));
@@ -188,27 +200,27 @@ public class VentanaInterfaz extends javax.swing.JFrame {
                 System.out.println("Expresion: " + ListaArboles.get(i).getNombre());
                 if(ListaArboles.get(i) != null){
                    ListaArboles.get(i).getArbol().GraficarSintactico( ListaArboles.get(i).getNombre());
+                   this.Consola.setText(this.Consola.getText()+"Creado Arbol de: "+ ListaArboles.get(i).getNombre()+"\n");
                    IniciarTablaPreorden(ListaArboles.get(i).getArbol().Raiz, i);
                    CrearTablaPreorden(ListaArboles.get(i).getArbol().Raiz, i);
                    ListaArboles.get(i).GraficarTablaSiguientes(ListaArboles.get(i).getNombre());
+                   this.Consola.setText(this.Consola.getText()+"Creada tabla de siguientes de: "+ ListaArboles.get(i).getNombre()+"\n");
                    IniciarTablaTransiciones(ListaArboles.get(i).CuadoSiguientes, i);
                    ListaArboles.get(i).GraficarTablaTransiciones(ListaArboles.get(i).getNombre());
                    ListaArboles.get(i).GraficarAFD(ListaArboles.get(i).getNombre());
+                   this.Consola.setText(this.Consola.getText()+"Creada tabla de transiciones de: "+ ListaArboles.get(i).getNombre()+"\n");
                    contador = 0 ;
                 }
                 
                 
             }
-            Consola.setText(MostrarArchivo.getText());
-            this.Consola.setText("Resultado: "+sintactico.resultado);
+            //Consola.setText(MostrarArchivo.getText());
+            
         } catch (Exception ex) {
             Consola.setText(MostrarArchivo.getText());
             Logger.getLogger(VentanaInterfaz.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        
-    }//GEN-LAST:event_AnalizarEntradasActionPerformed
+    }//GEN-LAST:event_GenerarAutomatasActionPerformed
 
     public static void CrearTablaPreorden(Nodo padre, int i){
         if (padre != null){
